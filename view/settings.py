@@ -93,7 +93,13 @@ class Ui_SettingsForm(object):
         self.formLayout_5.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.evolutionPassword)
         self.btnSaveEvo = QtWidgets.QPushButton(SettingsForm)
         self.btnSaveEvo.setObjectName("btnSaveEvo")
-        self.formLayout_5.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.btnSaveEvo)
+        self.formLayout_5.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.btnSaveEvo)
+        self.label_10 = QtWidgets.QLabel(SettingsForm)
+        self.label_10.setObjectName("label_10")
+        self.formLayout_5.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_10)
+        self.employer = QtWidgets.QLineEdit(SettingsForm)
+        self.employer.setObjectName("employer")
+        self.formLayout_5.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.employer)
         self.verticalLayout.addLayout(self.formLayout_5)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
@@ -116,4 +122,5 @@ class Ui_SettingsForm(object):
         self.label_7.setText(_translate("SettingsForm", "Логин"))
         self.label_8.setText(_translate("SettingsForm", "Пароль"))
         self.btnSaveEvo.setText(_translate("SettingsForm", "Сохранить"))
+        self.label_10.setText(_translate("SettingsForm", "Сотрудник"))
 
