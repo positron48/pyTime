@@ -1,12 +1,12 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
-from main import Ui_MainWindow
-from redmineTask import Ui_RedmineTaskDialog
-from evolutionTask import Ui_EvolutionTaskDialog
-from redmineTaskModel import RedmineTasksModel
-from evolutionTaskModel import EvolutionTasksModel
+from model.evolutionTaskModel import EvolutionTasksModel
+from model.redmineTaskModel import RedmineTasksModel
+from view.evolutionTask import Ui_EvolutionTaskDialog
 
+from view.main import Ui_MainWindow
+from view.redmineTask import Ui_RedmineTaskDialog
 
 class PyTimeGui(Ui_MainWindow):
     def __init__(self, mainWindow):
