@@ -10,7 +10,7 @@ class ConfigWorker:
 
         self.redmines = self.getRedminesData()
 
-    def saveConfig(self):
+    def save(self):
         with open(self.configFilePath, 'w') as configfile:
             self.config.write(configfile)
 
@@ -24,5 +24,19 @@ class ConfigWorker:
                 self.config["Redmine" + str(i)]['login'],
                 self.config["Redmine" + str(i)]['token']
             ])
-        print(self.redmines)
         return redmines
+
+    def getEvolutionData(self):
+        if "Evolution" in self.config:
+            return [
+                self.config["Evolution"]['url'],
+                self.config["Evolution"]['login'],
+                self.config["Evolution"]['token']
+            ]
+        return ["", "", ""]
+
+    def setEvolution(self, data):
+        self.config["Evolution"] = {}
+        self.config["Evolution"]['url'] = data[0]
+        self.config["Evolution"]['login'] = data[1]
+        self.config["Evolution"]['token'] = ""

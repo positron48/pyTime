@@ -7,6 +7,8 @@ from view.evolutionTask import Ui_EvolutionTaskDialog
 
 from view.main import Ui_MainWindow
 from view.redmineTask import Ui_RedmineTaskDialog
+from view.settingsExtended import Ui_Setting
+
 
 class PyTimeGui(Ui_MainWindow):
     def __init__(self, mainWindow):
@@ -29,6 +31,8 @@ class PyTimeGui(Ui_MainWindow):
         self.btnEvoTaskEdit.clicked.connect(self.editEvoTask)
         self.evoTasks.doubleClicked.connect(self.editEvoTask)
         self.btnEvoTaskDelete.clicked.connect(self.removeEvoTask)
+
+        self.menuSettings.triggered.connect(self.settings)
 
         self.redmineTasks.setModel(RedmineTasksModel(redmineTasksData))
         self.evoTasks.setModel(EvolutionTasksModel(evolutionTasksData))
@@ -156,3 +160,12 @@ class PyTimeGui(Ui_MainWindow):
             msg.setIcon(QMessageBox.Information)
             msg.setText("Выберите задачу для удаления")
             msg.exec_()
+
+    def settings(self):
+        dialog = QDialog()
+        dialog.ui = Ui_Setting()
+        dialog.ui.setupUi(dialog)
+
+        dialog.ui.init()
+
+        dialog.exec_()

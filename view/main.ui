@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>pyTime</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>resources/timeIcon.png</normaloff>resources/timeIcon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="autoFillBackground">
@@ -161,24 +165,20 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>Настройки</string>
+     <string>Файл</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>Сопоставление проектов</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_Hamster">
-    <property name="title">
-     <string>Импорт часов</string>
-    </property>
-    <addaction name="actionHamster"/>
-    <addaction name="actionRedmine"/>
+    <widget class="QMenu" name="menu2">
+     <property name="title">
+      <string>Импорт часов</string>
+     </property>
+     <addaction name="importFromRedmine"/>
+     <addaction name="importFromHamster"/>
+    </widget>
+    <addaction name="menuSettings"/>
+    <addaction name="menu2"/>
+    <addaction name="setProjects"/>
    </widget>
    <addaction name="menu"/>
-   <addaction name="menu_Hamster"/>
-   <addaction name="menu_2"/>
   </widget>
   <action name="actionHamster">
    <property name="text">
@@ -188,6 +188,26 @@
   <action name="actionRedmine">
    <property name="text">
     <string>Redmine</string>
+   </property>
+  </action>
+  <action name="menuSettings">
+   <property name="text">
+    <string>Настройки</string>
+   </property>
+  </action>
+  <action name="setProjects">
+   <property name="text">
+    <string>Сопоставление проектов</string>
+   </property>
+  </action>
+  <action name="importFromRedmine">
+   <property name="text">
+    <string>Redmine</string>
+   </property>
+  </action>
+  <action name="importFromHamster">
+   <property name="text">
+    <string>Hamster</string>
    </property>
   </action>
  </widget>
