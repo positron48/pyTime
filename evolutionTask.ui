@@ -63,7 +63,7 @@
         <widget class="QTextEdit" name="comment"/>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="project"/>
        </item>
        <item row="3" column="1">
         <widget class="QDateEdit" name="date">

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>623</height>
+    <width>789</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,10 +20,10 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>800</width>
-      <height>581</height>
+      <x>10</x>
+      <y>10</y>
+      <width>771</width>
+      <height>491</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -103,33 +103,45 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>10</number>
-       </property>
        <property name="topMargin">
         <number>31</number>
        </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
        <item>
         <widget class="QPushButton" name="btnEvoTaskGenerate">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
          <property name="text">
           <string>Сгенерировать записи evo</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btnSendToRedmine">
+        <widget class="QPushButton" name="btnSendToEvo">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Отправить в redmine</string>
+          <string>Отправить в evo</string>
          </property>
         </widget>
        </item>
        <item alignment="Qt::AlignTop">
-        <widget class="QPushButton" name="btnSendToEvo">
+        <widget class="QPushButton" name="btnSendToRedmine">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Отправить в evo</string>
+          <string>Отправить в redmine</string>
          </property>
         </widget>
        </item>
@@ -143,7 +155,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>789</width>
      <height>21</height>
     </rect>
    </property>
@@ -168,7 +180,6 @@
    <addaction name="menu_Hamster"/>
    <addaction name="menu_2"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionHamster">
    <property name="text">
     <string>Hamster</string>
