@@ -1,5 +1,5 @@
 from redmine import Redmine
-from redmine.exceptions import AuthError
+from redmine.exceptions import AuthError, ResourceNotFoundError
 
 class RedmineWorker:
 
@@ -18,3 +18,17 @@ class RedmineWorker:
             return user.api_key
         except AuthError:
             return False
+
+
+    def getTaskData(self, taskNumber):
+        try:
+            task = self.api.issue.get(taskNumber)
+            return [task.id, task.subject, task.project.name]
+        except ResourceNotFoundError:
+            return False
+
+    def setTime(self, taskId, date, hours, comment):
+        print(taskId, date, hours, comment)
+        response = self.api.time_entry.create(issue_id=taskId, spent_on=date, hours=hours, comments=comment)
+        print(response)
+        return response

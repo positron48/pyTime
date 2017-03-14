@@ -15,12 +15,12 @@ class Ui_Setting(Ui_SettingsForm):
 
         self.evolutionUrl.setText(evolutionData[0])
         self.evolutionLogin.setText(evolutionData[1])
+        self.evolutionLogin.setText(evolutionData[1])
         self.evolutionPassword.setEchoMode(QLineEdit.Password)
         self.redminePassword.setEchoMode(QLineEdit.Password)
 
         self.btnSaveEvo.clicked.connect(self.checkAndSaveEvo)
 
-        redmineData = self.config.getRedminesData()
         redmineModel = RedmineListModel(redmineData)
         self.redminesList.setModel(redmineModel)
         self.btnRedmineAdd.clicked.connect(self.addRedmine)
@@ -47,8 +47,9 @@ class Ui_Setting(Ui_SettingsForm):
                 self.evolutionUrl.text(),
                 self.evolutionLogin.text(),
                 token,
-                self.employer.text(),
-                ""
+                "",
+                self.employer.text()
+
             ])
             self.config.save()
 

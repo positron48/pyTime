@@ -33,7 +33,9 @@ class ConfigWorker:
             return [
                 self.config["Evolution"]['url'],
                 self.config["Evolution"]['login'],
-                self.config["Evolution"]['token']
+                self.config["Evolution"]['token'],
+                self.config["Evolution"]['employer_id'],
+                self.config["Evolution"]['employer_name']
             ]
         return ["", "", ""]
 

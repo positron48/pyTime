@@ -6,7 +6,7 @@ class RedmineTasksModel(QAbstractTableModel):
     def __init__(self, data, parent=None, *args):
         QAbstractTableModel.__init__(self, parent, *args)
         self.data = data
-        self.headerdata = ['Задача', 'Дата', 'Часы', 'Комментарий', 'Проект', 'Redmine']
+        self.headerdata = ['Задача', 'Дата', 'Часы', 'Комментарий', 'Проект', 'Redmine', 'Название задачи']
 
     def rowCount(self, parent):
         return len(self.data)
