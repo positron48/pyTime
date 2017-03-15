@@ -1,4 +1,4 @@
 # pyTime
 
 
-using python3 with libs PyQt5, requests and python-redmine
+using python3 with libs PyQt5, requests, python-redmine, sqlite, pyxdg
