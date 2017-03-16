@@ -6,8 +6,10 @@ from model.evolutionApiWorker import EvoWorker
 
 class Ui_Setting(Ui_SettingsForm):
 
-    def init(self, config):
+    def init(self, config, evoWorker, redmineWorkers):
         self.config = config
+        self.evoWorker = evoWorker
+        self.redmineWorkers = redmineWorkers
 
         redmineData = self.config.getRedminesData()
         evolutionData = self.config.getEvolutionData()
@@ -42,6 +44,8 @@ class Ui_Setting(Ui_SettingsForm):
         evoWorker = EvoWorker(self.evolutionUrl.text())
         token = evoWorker.getToken(self.evolutionLogin.text(), self.evolutionPassword.text())
         if token != False:
+            self.evoWorker = evoWorker
+
             self.config.setEvolution([
                 self.evolutionUrl.text(),
                 self.evolutionLogin.text(),
@@ -61,7 +65,6 @@ class Ui_Setting(Ui_SettingsForm):
             msg.setIcon(QMessageBox.Information)
             msg.setText("Ошибка авторизации")
             msg.exec_()
-
 
     def addRedmine(self):
         self.redminesList.model().data.append([
@@ -120,6 +123,7 @@ class Ui_Setting(Ui_SettingsForm):
                 msg.setText("Ошибка авторизации, неверный логин или пароль")
                 msg.exec_()
             else:
+                self.redmineWorkers[self.curRedmineIndex] = redmineWorker
                 self.redminesList.model().data[self.curRedmineIndex] = [
                     self.redmineUrl.text(),
                     self.redmineLogin.text(),

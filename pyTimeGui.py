@@ -53,6 +53,19 @@ class PyTimeGui(Ui_MainWindow):
 
         self.config = ConfigWorker()
 
+        evoConfig = self.config.getEvolutionData()
+        if evoConfig[2] != "":
+            self.evoWorker = EvoWorker(evoConfig[0], evoConfig[2])
+        else:
+            self.evoWorker = False
+
+        self.redmineWorkers = []
+        redmineData = self.config.getRedminesData()
+        for (i, item) in enumerate(redmineData):
+            redmineWorker = RedmineWorker(item[0])
+            redmineWorker.initWithKey(item[2])
+            self.redmineWorkers.append(redmineWorker)
+
     def bindTable(self, tableView, my_array):
         model = RedmineTasksModel(my_array)
         tableView.setModel(model)
@@ -221,21 +234,16 @@ class PyTimeGui(Ui_MainWindow):
         dialog.ui = Ui_Setting()
         dialog.ui.setupUi(dialog)
 
-        dialog.ui.init(self.config)
+        dialog.ui.init(self.config, self.evoWorker, self.redmineWorkers)
 
         dialog.exec_()
 
     def sendTimeToRedmine(self):
         redmineTasks = self.redmineTasks.model().data
-        redminesApi = []
         redmineData = self.config.getRedminesData()
 
         redmineIndexes = {}
-
         for (i, item) in enumerate(redmineData):
-            redmineWorker = RedmineWorker(item[0])
-            redmineWorker.initWithKey(item[2])
-            redminesApi.append(redmineWorker)
             redmineIndexes[item[0]] = i
 
         for task in redmineTasks:
@@ -246,7 +254,7 @@ class PyTimeGui(Ui_MainWindow):
                 else:
                     date = datetime.datetime.strptime(task[1], "%d.%m.%y").date().strftime('%Y-%m-%d')
 
-                redmine = redminesApi[redmineIndexes[task[5]]]
+                redmine = self.redmineWorkers[redmineIndexes[task[5]]]
                 if redmine.setTime(task[0], date, task[2], task[3]):
                     msg += task[0] + " добавлена в redmine\n"
                 else:
