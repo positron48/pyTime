@@ -54,3 +54,29 @@ class ConfigWorker:
             self.config["Redmine #" + str(i)]['login'] = item[1]
             self.config["Redmine #" + str(i)]['token'] = item[2]
         self.save()
+
+    def getEvoIdByRedmineProjectName(self, name):
+        if 'Redmine to Evo projects' in self.config:
+            if name.strip() in self.config['Redmine to Evo projects']:
+                return self.config['Redmine to Evo projects'][name.strip()]
+            else:
+                return -1
+
+    def setRedmineProjectToEvoId(self, name, id):
+        if not 'Redmine to Evo projects' in self.config:
+            self.config['Redmine to Evo projects'] = {}
+        self.config['Redmine to Evo projects'][name.strip()] = str(id)
+        self.save()
+
+    def getRedmineIdByHamsterProjectName(self, name):
+        if 'Hamster to Redmine projects' in self.config:
+            if name.strip() in self.config['Hamster to Redmine projects']:
+                return self.config['Hamster to Redmine projects'][name.strip()]
+        return -1
+
+    def setRedmineIdByHamsterProjectName(self, name, id):
+        if not 'Hamster to Redmine projects' in self.config:
+            self.config['Hamster to Redmine projects'] = {}
+        self.config['Hamster to Redmine projects'][name.strip()] = str(id)
+        print()
+        self.save()

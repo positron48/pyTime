@@ -9,6 +9,7 @@ from view.main import Ui_MainWindow
 from view.redmineTask import Ui_RedmineTaskDialog
 from view.settingsExtended import Ui_Setting
 from view.hamsterImport import Ui_HamsterImport
+from view.redmineEvoProjectsExtended import Ui_RedminEevoProjectsExtended
 
 from model.configWorker import ConfigWorker
 from model.redmineWorker import RedmineWorker
@@ -22,8 +23,8 @@ class PyTimeGui(Ui_MainWindow):
         self.setupUi(mainWindow)
 
         redmineTasksData = [
-            ['10474', '05.12.2016', '2', 'Разработка апи', 'Evolution', 'https://redmine.stolplit.ru', 'lalala'],
-            #['34965', '11.12.2016', '3.5', 'Тестирование и выкат', 'Столплит', 'http://redmine.stolplit.ru', 'lololo']
+            ['10474', '05.12.2016', '2', 'Разработка апи', 'Evolution', 'http://redmine.stolplit.ru', 'lalala'],
+            ['34965', '11.12.2016', '3.5', 'Тестирование и выкат', 'Столплит', 'https://redmine.stolplit.ru', 'lololo']
         ]
 
         evolutionTasksData = [['33254', '05.12.2016', '2', 'Разработка апи', 'Evolution']]
@@ -42,9 +43,11 @@ class PyTimeGui(Ui_MainWindow):
 
         self.menuSettings.triggered.connect(self.settings)
         self.importFromHamster.triggered.connect(self.importTasksFromHamster)
+        self.setProjects.triggered.connect(self.setRedmineEvoProjects)
 
         self.redmineTasks.setModel(RedmineTasksModel(redmineTasksData))
         self.evoTasks.setModel(EvolutionTasksModel(evolutionTasksData))
+
         self.config = ConfigWorker()
 
     def bindTable(self, tableView, my_array):
@@ -215,7 +218,7 @@ class PyTimeGui(Ui_MainWindow):
         dialog.ui = Ui_Setting()
         dialog.ui.setupUi(dialog)
 
-        dialog.ui.init()
+        dialog.ui.init(self.config)
 
         dialog.exec_()
 
@@ -278,25 +281,40 @@ class PyTimeGui(Ui_MainWindow):
             hamsterWorker = HamsterWorker()
             hamsterTasks = hamsterWorker.getTasksByDates(dayFrom, dayTo)
 
-            self.redmineTasks.model().data = []
-            self.redmineTasks.model().layoutChanged.emit()
-
-            count = 0
-            for task in hamsterTasks.values():
-                print(task)
-                self.redmineTasks.model().data.append([
-                    str(task['task_id']),
-                    task['start'].strftime('%d.%m.%Y'),
-                    str(task['hours']),
-                    task['description'],
-                    task['cat'],
-                    "",
-                    ""
-                ])
+            if hamsterTasks != False:
+                self.redmineTasks.model().data = []
                 self.redmineTasks.model().layoutChanged.emit()
-                count += 1
 
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Information)
-            msgBox.setText("Импортировано:" + str(count))
-            msgBox.exec_()
+                count = 0
+                for task in hamsterTasks.values():
+                    print(task)
+                    self.redmineTasks.model().data.append([
+                        str(task['task_id']),
+                        task['start'].strftime('%d.%m.%Y'),
+                        str(task['hours']),
+                        task['description'],
+                        task['cat'],
+                        "",
+                        ""
+                    ])
+                    self.redmineTasks.model().layoutChanged.emit()
+                    count += 1
+
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("Импортировано:" + str(count))
+                msgBox.exec_()
+            else:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("Не найден файл базы данных Hamster")
+                msgBox.exec_()
+
+    def setRedmineEvoProjects(self):
+        dialog = QDialog()
+        dialog.ui = Ui_RedminEevoProjectsExtended()
+        dialog.ui.setupUi(dialog)
+
+        dialog.ui.init(self.config)
+
+        dialog.exec_()

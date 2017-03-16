@@ -1,14 +1,13 @@
 from view.settings import Ui_SettingsForm
 from PyQt5.QtWidgets import QMessageBox, QLineEdit
-from model.configWorker import ConfigWorker
 from model.redmineListModel import RedmineListModel
 from model.redmineWorker import RedmineWorker
 from model.evolutionApiWorker import EvoWorker
 
 class Ui_Setting(Ui_SettingsForm):
 
-    def init(self):
-        self.config = ConfigWorker()
+    def init(self, config):
+        self.config = config
 
         redmineData = self.config.getRedminesData()
         evolutionData = self.config.getEvolutionData()
@@ -76,7 +75,6 @@ class Ui_Setting(Ui_SettingsForm):
         self.redmineUrl.setText("redmine")
         self.redminePassword.setText("")
         self.curRedmineIndex = len(self.redminesList.model().data) - 1
-        print(self.curRedmineIndex)
 
     def editRedmine(self):
         index = self.redminesList.selectedIndexes()

@@ -13,61 +13,85 @@ class HamsterWorker:
 
     def getTasksByDates(self, dayFrom, dayTo):
 
-        con = sqlite.connect(self.db_path, sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
-        cur = con.cursor()
+        if os.path.isfile(self.db_path):
+            con = sqlite.connect(self.db_path, sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
+            cur = con.cursor()
 
-        # get all tasks from date (query from hamster sources)
-        query = """SELECT a.id AS id,
-                          a.start_time AS start_time,
-                          a.end_time AS end_time,
-                          a.description as description,
-                          b.name AS name,
-                          b.id as activity_id,
-                          c.name as category,
-                          e.name as tag
-                    FROM facts a
-                    LEFT JOIN activities b ON a.activity_id = b.id
-                    LEFT JOIN categories c ON b.category_id = c.id
-                    LEFT JOIN fact_tags d ON d.fact_id = a.id
-                    LEFT JOIN tags e ON e.id = d.tag_id
-                    WHERE a.start_time > '""" + dayFrom.strftime('%Y-%m-%d') + """'
-                        AND a.end_time < '""" + dayTo.strftime('%Y-%m-%d') + """'
-                    ORDER BY a.start_time ASC"""
-        cur.execute(query)
+            # get all tasks from date (query from hamster sources)
+            query = """SELECT a.id AS id,
+                              a.start_time AS start_time,
+                              a.end_time AS end_time,
+                              a.description as description,
+                              b.name AS name,
+                              b.id as activity_id,
+                              c.name as category,
+                              e.name as tag
+                        FROM facts a
+                        LEFT JOIN activities b ON a.activity_id = b.id
+                        LEFT JOIN categories c ON b.category_id = c.id
+                        LEFT JOIN fact_tags d ON d.fact_id = a.id
+                        LEFT JOIN tags e ON e.id = d.tag_id
+                        WHERE a.start_time > '""" + dayFrom.strftime('%Y-%m-%d') + """'
+                            AND a.end_time < '""" + dayTo.strftime('%Y-%m-%d') + """'
+                        ORDER BY a.start_time ASC"""
+            cur.execute(query)
 
-        allTasks = cur.fetchall()
-        cur.close()
+            allTasks = cur.fetchall()
+            cur.close()
 
-        # format tasks data
-        tasks = {}
-        for (i, task) in enumerate(allTasks):
-            start = datetime.datetime.strptime(task[1], '%Y-%m-%d %H:%M:%S')
-            end = datetime.datetime.strptime(task[2], '%Y-%m-%d %H:%M:%S')
-            hours = (end - start).seconds / 3600.0
+            # format tasks data
+            tasks = {}
+            for (i, task) in enumerate(allTasks):
+                start = datetime.datetime.strptime(task[1], '%Y-%m-%d %H:%M:%S')
+                end = datetime.datetime.strptime(task[2], '%Y-%m-%d %H:%M:%S')
+                hours = (end - start).seconds / 3600.0
 
-            if task[3] is None:
-                description = ''
-            else:
-                description = task[3]
+                if task[3] is None:
+                    description = ''
+                else:
+                    description = task[3]
 
-            tasks[i] = {
-                'id': task[0],
-                'start': start,
-                # 'end': end,
-                'hours': hours,
-                'description': description,
-                'name': task[4],
-                'cat': task[6],
-                'tag': task[7]
-            }
+                tasks[i] = {
+                    'id': task[0],
+                    'start': start,
+                    # 'end': end,
+                    'hours': hours,
+                    'description': description,
+                    'name': task[4],
+                    'cat': task[6],
+                    'tag': task[7]
+                }
 
-        # parse redmine task_id (first number in activity name)
-        for task in tasks.values():
-            result = re.match(r'^\d+', task['name'])
-            if result:
-                task_id = result.group(0)
-                task['task_id'] = task_id
-            else:
-                task['task_id'] = ''
+            # parse redmine task_id (first number in activity name)
+            for task in tasks.values():
+                result = re.match(r'^\d+', task['name'])
+                if result:
+                    task_id = result.group(0)
+                    task['task_id'] = task_id
+                else:
+                    task['task_id'] = ''
 
-        return tasks
+            return tasks
+        else:
+            return False
+
+    def getProjects(self):
+        if os.path.isfile(self.db_path):
+            con = sqlite.connect(self.db_path, sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
+            cur = con.cursor()
+
+            # get all tasks from date (query from hamster sources)
+            query = """SELECT c.name as category FROM categories"""
+            cur.execute(query)
+
+            allCategories = cur.fetchall()
+            cur.close()
+
+            # format tasks data
+            categories = []
+            for (i, task) in enumerate(allCategories):
+                categories.appenf(task[0])
+
+            return categories
+        else:
+            return ["столплит", "инкубатор", "stolline", "инструментовоз", "restore", "samsung"]

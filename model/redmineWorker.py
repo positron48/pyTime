@@ -28,7 +28,10 @@ class RedmineWorker:
             return False
 
     def setTime(self, taskId, date, hours, comment):
-        print(taskId, date, hours, comment)
         response = self.api.time_entry.create(issue_id=taskId, spent_on=date, hours=hours, comments=comment)
-        print(response)
         return response
+
+    def getProjects(self):
+        projects = self.api.project.all()
+        print(projects)
+        return projects

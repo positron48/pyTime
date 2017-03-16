@@ -21,7 +21,7 @@ class EvoWorker:
         if name != False:
             params['title_start'] = name
 
-        response = requests.get(self.url + "/api/auth", params)
+        response = requests.get(self.url + "/api/employee", params)
         response = response.json()
 
         if "data" in response and len(response['data']) > 0:
@@ -34,3 +34,16 @@ class EvoWorker:
         if len(employeers) == 1:
             return employeers[0]['id']
         return False
+
+    def getProjects(self, name=False):
+        params = {"token":self.token}
+        if name != False:
+            params['title_start'] = name
+
+        response = requests.get(self.url + "/api/project", params)
+        response = response.json()
+
+        if "data" in response and len(response['data']) > 0:
+            return response['data']
+        else:
+            return False
