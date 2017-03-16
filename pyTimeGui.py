@@ -14,6 +14,7 @@ from view.redmineEvoProjectsExtended import Ui_RedminEevoProjectsExtended
 from model.configWorker import ConfigWorker
 from model.redmineWorker import RedmineWorker
 from model.hamsterWorker import HamsterWorker
+from model.evolutionApiWorker import EvoWorker
 
 import datetime
 
@@ -47,6 +48,8 @@ class PyTimeGui(Ui_MainWindow):
 
         self.redmineTasks.setModel(RedmineTasksModel(redmineTasksData))
         self.evoTasks.setModel(EvolutionTasksModel(evolutionTasksData))
+
+        self.btnEvoTaskGenerate.clicked.connect(self.generateEvoTasks)
 
         self.config = ConfigWorker()
 
@@ -318,3 +321,16 @@ class PyTimeGui(Ui_MainWindow):
         dialog.ui.init(self.config)
 
         dialog.exec_()
+
+    def generateEvoTasks(self):
+        redmineTasks = self.redmineTasks.model().data
+        self.evoTasks.model().data = []
+        for task in redmineTasks:
+            self.evoTasks.model().data.append([
+                task[6],
+                task[1],
+                task[2],
+                task[0],
+                task[4]
+            ])
+            self.evoTasks.model().layoutChanged.emit()
