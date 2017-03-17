@@ -81,8 +81,12 @@ class Ui_RedminEevoProjectsExtended(Ui_RedminEevoProjects):
         if index >= 0:
             self.selectedIndex = index
             selectedProjectName = self.redmineProjectsView.model().data[index]
-            evoId = int(self.config.getEvoIdByRedmineProjectName(selectedProjectName[1]))
+            evoId = self.config.getEvoIdByRedmineProjectName(selectedProjectName[1])
+            if evoId != -1:
+                evoId = int(evoId)
+
             if evoId in self.evoProjectIdToName:
+                evoId = int(evoId)
                 self.evoProject.setText(self.evoProjectIdToName[evoId])
             else:
                 self.evoProject.setText("")

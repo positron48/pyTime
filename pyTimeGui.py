@@ -51,6 +51,8 @@ class PyTimeGui(Ui_MainWindow):
 
         self.btnEvoTaskGenerate.clicked.connect(self.generateEvoTasks)
 
+        self.btnSendToEvo.clicked.connect(self.sendToEvo)
+
         self.config = ConfigWorker()
 
         evoConfig = self.config.getEvolutionData()
@@ -65,6 +67,8 @@ class PyTimeGui(Ui_MainWindow):
             redmineWorker = RedmineWorker(item[0])
             redmineWorker.initWithKey(item[2])
             self.redmineWorkers.append(redmineWorker)
+
+        self.refreshAllTime()
 
     def bindTable(self, tableView, my_array):
         model = RedmineTasksModel(my_array)
@@ -105,6 +109,8 @@ class PyTimeGui(Ui_MainWindow):
             ])
             self.redmineTasks.model().layoutChanged.emit()
 
+        self.refreshAllTime()
+
     def editRedmineTask(self):
         index = self.redmineTasks.selectedIndexes()
         if len(index) > 0:
@@ -123,7 +129,11 @@ class PyTimeGui(Ui_MainWindow):
             dialog.ui.taskNubmer.setText(task[0])
             dialog.ui.redmineProject.setText(task[4])
             dialog.ui.hours.setValue(float(task[2]))
-            dialog.ui.date.setDate(QtCore.QDate.fromString(task[1], 'dd.MM.yyyy'))
+            if len(task[1]) == 10:
+                dialog.ui.date.setDate(QtCore.QDate.fromString(task[1], 'dd.MM.yyyy'))
+            else:
+                dialog.ui.date.setDate(QtCore.QDate.fromString(task[1], 'dd.MM.yy'))
+
             dialog.ui.comment.setText(task[3])
             dialog.ui.taskName.setText(task[6])
 
@@ -158,6 +168,8 @@ class PyTimeGui(Ui_MainWindow):
             msg.setText("Выберите задачу для изменения")
             msg.exec_()
 
+        self.refreshAllTime()
+
     def removeRedmineTask(self):
         index = self.redmineTasks.selectedIndexes()
         if len(index) > 0:
@@ -169,6 +181,8 @@ class PyTimeGui(Ui_MainWindow):
             msg.setIcon(QMessageBox.Information)
             msg.setText("Выберите задачу для удаления")
             msg.exec_()
+
+        self.refreshAllTime()
 
     def addEvoTask(self):
         dialog = QDialog()
@@ -246,8 +260,8 @@ class PyTimeGui(Ui_MainWindow):
         for (i, item) in enumerate(redmineData):
             redmineIndexes[item[0]] = i
 
+        msg = ""
         for task in redmineTasks:
-            msg = ""
             if task[5] in redmineIndexes:
                 if len(task[1]) == 10:
                     date = datetime.datetime.strptime(task[1], "%d.%m.%Y").date().strftime('%Y-%m-%d')
@@ -258,13 +272,13 @@ class PyTimeGui(Ui_MainWindow):
                 if redmine.setTime(task[0], date, task[2], task[3]):
                     msg += task[0] + " добавлена в redmine\n"
                 else:
-                    msg += task[0] + " - что-то пошло не так\n"
+                    msg += task[0] + " " + task[3] + " - что-то пошло не так\n"
 
-            if msg != "":
-                msgBox = QMessageBox()
-                msgBox.setIcon(QMessageBox.Information)
-                msgBox.setText(msg)
-                msgBox.exec_()
+        if msg != "":
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(msg)
+            msgBox.exec_()
 
     def importTasksFromHamster(self):
 
@@ -298,15 +312,25 @@ class PyTimeGui(Ui_MainWindow):
 
                 count = 0
                 for task in hamsterTasks.values():
-                    print(task)
+
+                    redmineId = int(self.config.getRedmineIdByHamsterProjectName(task['cat']))
+                    redmineWorker = self.redmineWorkers[redmineId]
+                    taskRedmine = redmineWorker.getTaskData(task['task_id'])
+                    if taskRedmine is False:
+                        taskName = ""
+                        taskProject = task['cat']
+                    else:
+                        taskName = taskRedmine[1]
+                        taskProject = taskRedmine[2]
+
                     self.redmineTasks.model().data.append([
                         str(task['task_id']),
                         task['start'].strftime('%d.%m.%Y'),
                         str(task['hours']),
                         task['description'],
-                        task['cat'],
-                        "",
-                        ""
+                        taskProject,
+                        redmineWorker.getUrl(),
+                        taskName
                     ])
                     self.redmineTasks.model().layoutChanged.emit()
                     count += 1
@@ -321,6 +345,11 @@ class PyTimeGui(Ui_MainWindow):
                 msgBox.setText("Не найден файл базы данных Hamster")
                 msgBox.exec_()
 
+        self.refreshAllTime()
+
+        self.evoTasks.model().data = []
+        self.evoTasks.model().layoutChanged.emit()
+
     def setRedmineEvoProjects(self):
         dialog = QDialog()
         dialog.ui = Ui_RedminEevoProjectsExtended()
@@ -332,13 +361,82 @@ class PyTimeGui(Ui_MainWindow):
 
     def generateEvoTasks(self):
         redmineTasks = self.redmineTasks.model().data
+        evoProjects = self.evoWorker.getProjects()
+
+        evoProjectNames = []
+        evoProjectNamesToId = {}
+        evoProjectIdToName = {}
+        if evoProjects != False:
+            for project in evoProjects:
+                evoProjectNames.append(project['title'])
+                evoProjectNamesToId[project['title']] = project['id']
+                evoProjectIdToName[project['id']] = project['title']
+
         self.evoTasks.model().data = []
         for task in redmineTasks:
+            redmineProject = task[4]
+            evoProjectId = int(self.config.getEvoIdByRedmineProjectName(redmineProject))
+            if evoProjectId in evoProjectIdToName:
+                evoProject = evoProjectIdToName[evoProjectId]
+            else:
+                evoProject = "!!! " + redmineProject
+
+            if task[6] == '':
+                evoFormul = task[3]
+            else:
+                evoFormul = task[6]
+
             self.evoTasks.model().data.append([
-                task[6],
+                evoFormul,
                 task[1],
                 task[2],
                 task[0],
-                task[4]
+                evoProject
             ])
             self.evoTasks.model().layoutChanged.emit()
+
+        self.refreshAllTime()
+
+    def refreshAllTime(self):
+        allTime = 0
+        for task in self.redmineTasks.model().data:
+            allTime += float(task[2])
+        self.fullTimeLabel.setText(str(allTime))
+
+    def sendToEvo(self):
+        evoTasks = self.evoTasks.model().data
+
+        evoProjects = self.evoWorker.getProjects()
+        if evoProjects != False:
+            evoProjectNames = []
+            evoProjectNamesToId = {}
+            evoProjectIdToName = {}
+            for project in evoProjects:
+                evoProjectNames.append(project['title'])
+                evoProjectNamesToId[project['title']] = project['id']
+                evoProjectIdToName[project['id']] = project['title']
+
+        evoData = self.config.getEvolutionData()
+        employerId = evoData[3]
+
+        msg = ""
+
+        for task in evoTasks:
+            projectId = evoProjectNamesToId[task[4]]
+            result = self.evoWorker.sendTask(
+                task[0],
+                task[1],
+                task[2],
+                task[3],
+                employerId,
+                projectId
+            )
+            if result is False:
+                msg += task[0] + " failed\n"
+            else:
+                msg += task[0] + " success\n"
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText("Данные отправлены:\n" + msg)
+        msgBox.exec_()

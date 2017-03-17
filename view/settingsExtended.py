@@ -16,7 +16,8 @@ class Ui_Setting(Ui_SettingsForm):
 
         self.evolutionUrl.setText(evolutionData[0])
         self.evolutionLogin.setText(evolutionData[1])
-        self.evolutionLogin.setText(evolutionData[1])
+        self.employer.setText(evolutionData[4])
+
         self.evolutionPassword.setEchoMode(QLineEdit.Password)
         self.redminePassword.setEchoMode(QLineEdit.Password)
 
@@ -45,12 +46,17 @@ class Ui_Setting(Ui_SettingsForm):
         token = evoWorker.getToken(self.evolutionLogin.text(), self.evolutionPassword.text())
         if token != False:
             self.evoWorker = evoWorker
+            employerId = self.evoWorker.getEmployeerId(self.employer.text())
+            if employerId is False:
+                employerId = ""
+            else:
+                employerId = str(employerId)
 
             self.config.setEvolution([
                 self.evolutionUrl.text(),
                 self.evolutionLogin.text(),
                 token,
-                "",
+                employerId,
                 self.employer.text()
 
             ])

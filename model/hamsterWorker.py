@@ -1,5 +1,6 @@
 import os
 import re
+import copy
 import sqlite3 as sqlite
 import datetime
 from xdg.BaseDirectory import xdg_data_home
@@ -71,6 +72,47 @@ class HamsterWorker:
                 else:
                     task['task_id'] = ''
 
+            # format data to send in redmine: group by date, task_id
+            redmine_tasks = {}
+            for task in tasks.values():
+                taskDate = task['start'].strftime('%Y-%m-%d')
+                if not taskDate in redmine_tasks:
+                    redmine_tasks[taskDate] = {}
+                if task['task_id'] == '':
+                    task['task_id'] = 'empty_' + task['cat']
+
+                if not task['task_id'] in redmine_tasks[taskDate]:
+                    redmine_tasks[taskDate][task['task_id']] = copy.copy(task)
+                    redmine_tasks[taskDate][task['task_id']]['description'] = []
+                else:
+                    redmine_tasks[taskDate][task['task_id']]['hours'] += task['hours']
+
+                description = copy.copy(task['description'])
+                if description is not '':
+                    redmine_tasks[taskDate][task['task_id']]['description'].append(description)
+
+            tasks = {}
+            i = 0
+            for redmine_tasks in redmine_tasks.values():
+                for task in redmine_tasks.values():
+                    description = ', '.join(list(set(task['description'])))
+                    try:
+                        task_id = int(task['task_id'])
+                    except ValueError:
+                        task_id = ""
+
+                    tasks[i] = {
+                        'id': task['id'],
+                        'start': task['start'],
+                        'hours': round(task['hours'], 2),
+                        'description': description,
+                        'name': task['name'],
+                        'cat': task['cat'],
+                        'tag': task['tag'],
+                        'task_id': task_id
+                    }
+                    i += 1
+
             return tasks
         else:
             return False
@@ -81,7 +123,7 @@ class HamsterWorker:
             cur = con.cursor()
 
             # get all tasks from date (query from hamster sources)
-            query = """SELECT c.name as category FROM categories"""
+            query = """SELECT name as category FROM categories"""
             cur.execute(query)
 
             allCategories = cur.fetchall()
@@ -89,8 +131,8 @@ class HamsterWorker:
 
             # format tasks data
             categories = []
-            for (i, task) in enumerate(allCategories):
-                categories.appenf(task[0])
+            for (i, cat) in enumerate(allCategories):
+                categories.append(cat[0])
 
             return categories
         else:

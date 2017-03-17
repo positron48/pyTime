@@ -1,5 +1,5 @@
 from redmine import Redmine
-from redmine.exceptions import AuthError, ResourceNotFoundError
+from redmine.exceptions import AuthError, ResourceNotFoundError, ForbiddenError, ValidationError
 
 class RedmineWorker:
 
@@ -26,12 +26,20 @@ class RedmineWorker:
             return [task.id, task.subject, task.project.name]
         except ResourceNotFoundError:
             return False
+        except ForbiddenError:
+            return False
 
     def setTime(self, taskId, date, hours, comment):
-        response = self.api.time_entry.create(issue_id=taskId, spent_on=date, hours=hours, comments=comment)
-        return response
+        try:
+            response = self.api.time_entry.create(issue_id=taskId, spent_on=date, hours=hours, comments=comment)
+            return response
+        except ValidationError:
+            return False
 
     def getProjects(self):
         projects = self.api.project.all()
         print(projects)
         return projects
+
+    def getUrl(self):
+        return self.url

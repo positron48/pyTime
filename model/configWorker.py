@@ -59,8 +59,7 @@ class ConfigWorker:
         if 'Redmine to Evo projects' in self.config:
             if name.strip() in self.config['Redmine to Evo projects']:
                 return self.config['Redmine to Evo projects'][name.strip()]
-            else:
-                return -1
+        return -1
 
     def setRedmineProjectToEvoId(self, name, id):
         if not 'Redmine to Evo projects' in self.config:
