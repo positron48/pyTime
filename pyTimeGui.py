@@ -1,5 +1,6 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog, QMessageBox, QCompleter
+from PyQt5.QtCore import QStringListModel, QItemSelectionModel
 
 from model.evolutionTaskModel import EvolutionTasksModel
 from model.redmineTaskModel import RedmineTasksModel
@@ -23,12 +24,9 @@ class PyTimeGui(Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(mainWindow)
 
-        redmineTasksData = [
-            ['10474', '05.12.2016', '2', 'Разработка апи', 'Evolution', 'http://redmine.stolplit.ru', 'lalala'],
-            ['34965', '11.12.2016', '3.5', 'Тестирование и выкат', 'Столплит', 'https://redmine.stolplit.ru', 'lololo']
-        ]
+        redmineTasksData = []
 
-        evolutionTasksData = [['33254', '05.12.2016', '2', 'Разработка апи', 'Evolution']]
+        evolutionTasksData = []
 
         self.btnRedmineTaskAdd.clicked.connect(self.addRedmineTask)
         self.btnRedmineTaskEdit.clicked.connect(self.editRedmineTask)
@@ -191,6 +189,26 @@ class PyTimeGui(Ui_MainWindow):
         dialog.ui.date.setDate(QtCore.QDate.currentDate())
         dialog.ui.hours.setValue(8)
 
+        evolutionData = self.config.getEvolutionData()
+        evoWorker = EvoWorker(evolutionData[0], evolutionData[2])
+        evoProjects = evoWorker.getProjects()
+
+        if evoProjects != False:
+            self.evoProjectNames = []
+            self.evoProjectNamesToId = {}
+            self.evoProjectIdToName = {}
+            for project in evoProjects:
+                self.evoProjectNames.append(project['title'])
+                self.evoProjectNamesToId[project['title']] = project['id']
+                self.evoProjectIdToName[project['id']] = project['title']
+
+            completer = QCompleter()
+            dialog.ui.project.setCompleter(completer)
+
+            model = QStringListModel()
+            completer.setModel(model)
+            model.setStringList(self.evoProjectNames)
+
         if dialog.exec_() == QDialog.Accepted:
             self.evoTasks.model().data.append([
                 dialog.ui.formul.text(),
@@ -212,6 +230,28 @@ class PyTimeGui(Ui_MainWindow):
 
             dialog.ui.formul.setText(task[0])
             dialog.ui.project.setText(task[4])
+
+            evolutionData = self.config.getEvolutionData()
+            evoWorker = EvoWorker(evolutionData[0], evolutionData[2])
+            evoProjects = evoWorker.getProjects()
+
+            if evoProjects != False:
+                self.evoProjectNames = []
+                self.evoProjectNamesToId = {}
+                self.evoProjectIdToName = {}
+                for project in evoProjects:
+                    self.evoProjectNames.append(project['title'])
+                    self.evoProjectNamesToId[project['title']] = project['id']
+                    self.evoProjectIdToName[project['id']] = project['title']
+
+                completer = QCompleter()
+                dialog.ui.project.setCompleter(completer)
+
+                model = QStringListModel()
+                completer.setModel(model)
+                model.setStringList(self.evoProjectNames)
+
+
             dialog.ui.hours.setValue(float(task[2]))
             dialog.ui.date.setDate(QtCore.QDate.fromString(task[1], 'dd.MM.yyyy'))
             dialog.ui.comment.setText(task[3])
