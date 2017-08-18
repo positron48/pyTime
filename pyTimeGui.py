@@ -96,9 +96,13 @@ class PyTimeGui(Ui_MainWindow):
                 projectName = dialog.ui.redmineProject.text()
                 taskName = ""
 
+            time = dialog.ui.date.text()
+            if len(time) != 10:
+                time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+
             self.redmineTasks.model().data.append([
                 dialog.ui.taskNubmer.text(),
-                dialog.ui.date.text(),
+                time,
                 dialog.ui.hours.value(),
                 dialog.ui.comment.toPlainText(),
                 projectName,
@@ -150,9 +154,13 @@ class PyTimeGui(Ui_MainWindow):
                         projectName = taskData[2]
                         taskName = taskData[1]
 
+                time = dialog.ui.date.text()
+                if len(time) != 10:
+                    time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+
                 self.redmineTasks.model().data[index] = [
                     dialog.ui.taskNubmer.text(),
-                    dialog.ui.date.text(),
+                    time,
                     dialog.ui.hours.value(),
                     dialog.ui.comment.toPlainText(),
                     projectName,
@@ -210,9 +218,13 @@ class PyTimeGui(Ui_MainWindow):
             model.setStringList(self.evoProjectNames)
 
         if dialog.exec_() == QDialog.Accepted:
+            time = dialog.ui.date.text()
+            if len(time) != 10:
+                time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+
             self.evoTasks.model().data.append([
                 dialog.ui.formul.text(),
-                dialog.ui.date.text(),
+                time,
                 dialog.ui.hours.value(),
                 dialog.ui.comment.toPlainText(),
                 dialog.ui.project.text()
@@ -257,9 +269,13 @@ class PyTimeGui(Ui_MainWindow):
             dialog.ui.comment.setText(task[3])
 
             if dialog.exec_() == QDialog.Accepted:
+                time = dialog.ui.date.text()
+                if len(time) != 10:
+                    time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+
                 self.evoTasks.model().data[index] = [
                     dialog.ui.formul.text(),
-                    dialog.ui.date.text(),
+                    time,
                     dialog.ui.hours.value(),
                     dialog.ui.comment.toPlainText(),
                     dialog.ui.project.text()
