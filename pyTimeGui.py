@@ -98,7 +98,7 @@ class PyTimeGui(Ui_MainWindow):
 
             time = dialog.ui.date.text()
             if len(time) != 10:
-                time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+                time = datetime.datetime.strptime(dialog.ui.date.text(), "%d.%m.%y").date().strftime('%d.%m.%Y')
 
             self.redmineTasks.model().data.append([
                 dialog.ui.taskNubmer.text(),
@@ -156,7 +156,7 @@ class PyTimeGui(Ui_MainWindow):
 
                 time = dialog.ui.date.text()
                 if len(time) != 10:
-                    time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+                    time = datetime.datetime.strptime(dialog.ui.date.text(), "%d.%m.%y").date().strftime('%d.%m.%Y')
 
                 self.redmineTasks.model().data[index] = [
                     dialog.ui.taskNubmer.text(),
@@ -220,7 +220,7 @@ class PyTimeGui(Ui_MainWindow):
         if dialog.exec_() == QDialog.Accepted:
             time = dialog.ui.date.text()
             if len(time) != 10:
-                time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+                time = datetime.datetime.strptime(dialog.ui.date.text(), "%d.%m.%y").date().strftime('%d.%m.%Y')
 
             self.evoTasks.model().data.append([
                 dialog.ui.formul.text(),
@@ -271,7 +271,7 @@ class PyTimeGui(Ui_MainWindow):
             if dialog.exec_() == QDialog.Accepted:
                 time = dialog.ui.date.text()
                 if len(time) != 10:
-                    time = QtCore.QDate.fromString(dialog.ui.date.text(), 'dd.MM.yy').toString('dd.MM.yyyy')
+                    time = datetime.datetime.strptime(dialog.ui.date.text(), "%d.%m.%y").date().strftime('%d.%m.%Y')
 
                 self.evoTasks.model().data[index] = [
                     dialog.ui.formul.text(),
