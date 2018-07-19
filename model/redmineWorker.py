@@ -1,5 +1,5 @@
-from redmine import Redmine
-from redmine.exceptions import AuthError, ResourceNotFoundError, ForbiddenError, ValidationError
+from redminelib import Redmine
+from redminelib.exceptions import AuthError, ResourceNotFoundError, ForbiddenError, ValidationError
 
 class RedmineWorker:
 

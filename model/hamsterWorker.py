@@ -42,9 +42,21 @@ class HamsterWorker:
 
             # format tasks data
             tasks = {}
+            print(allTasks)
             for (i, task) in enumerate(allTasks):
-                start = datetime.datetime.strptime(task[1], '%Y-%m-%d %H:%M:%S')
-                end = datetime.datetime.strptime(task[2], '%Y-%m-%d %H:%M:%S')
+                start = re.sub(
+                   r"\.\d*$",
+                   "",
+                    task[1]
+                )
+                end = re.sub(
+                   r"\.\d*$",
+                   "",
+                    task[2]
+                )
+
+                start = datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+                end = datetime.datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
                 hours = (end - start).seconds / 3600.0
 
                 if task[3] is None:
